@@ -1,0 +1,10 @@
+{
+
+    "require": {
+        "twig/twig": "2.x-dev",
+        "facebook/webdriver": "^1.6",
+        "phpunit/phpunit": "7.4.x-dev",
+        "phpunit/php-invoker": "*",
+        "phpunit/phpunit-selenium": "*"
+    }
+}
