@@ -19,15 +19,16 @@ function checkLength($value = "", $min, $max) {
 	return !$result;
 }
 
-$fields = [];
+$book = [];
 
-if ($title != '' && $description != '') {
-	$fields['name'] = $title;
-	$fields['description'] = $description;
+if ($title != '' && $description != '' && $author != '') {
+	$book['name'] = $title;
+	$book['description'] = $description;
+	$book['author'] = $author;
 
 	echo "Введенные данные корректны";
 
-	saveDataJson($fields);
+	addBook($book);
 } else {
 	echo "Заполните пустые поля";
 }
@@ -36,7 +37,7 @@ function booksItems() {
 
 }
 
-function saveDataJson($data) {
+function addBook($book) {
 
 	/*
 	{
@@ -45,20 +46,21 @@ function saveDataJson($data) {
 		"description": "Описание"
 	}
 	*/
-   	$numberBook = 1;
+   	//$numberBook = 1;
 
 	$filename = 'data.json';
-	$dataText = '{books:[{'.PHP_EOL
-		.'"id":'.$numberBook.PHP_EOL.'}';
+	//$dataText = '{books:[{'.PHP_EOL
+	//	.'"id":'.$numberBook.PHP_EOL.'}';
 
-	if (!empty($data)) {
-		$file = fopen($filename,'a+');
-		fwrite($file,$dataText);
-		fclose($file);
+	$cont = file_get_contents($filename);
+	$data = json_decode($cont);
 
-		$numberBook++;
-	} else {
-		echo "Ошибка операции";
-	}
+	$data->maxId++;
+	$book['id'] = $data->maxId;
+	$data->books[] = $book;
+
+	$cont = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+	file_put_contents($filename, $cont);
+
 }
 
