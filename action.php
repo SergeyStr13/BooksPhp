@@ -1,4 +1,6 @@
 <?php
+defined('CORE_INDEX') or die('restricted access');
+
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$title = isset($_POST['title']) ? $_POST['title'] : null;
@@ -29,6 +31,10 @@ if ($title != '' && $description != '' && $author != '') {
 	echo "Введенные данные корректны";
 
 	addBook($book);
+	//redirect(/);
+	$url = '/';
+	header("Location : http://localhost/BooksPhp$url");
+
 } else {
 	echo "Заполните пустые поля";
 }

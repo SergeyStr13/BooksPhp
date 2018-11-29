@@ -1,13 +1,16 @@
 <?php
+defined('CORE_INDEX') or die('restricted access');
+
 	$fileData = file_get_contents('data.json');
 	$dataJson = json_decode($fileData);
 	//var_dump($dataJson->books[0]->title) ;
 	//$dataJson->books
 	$books = $dataJson->books;
+
 ?>
 <h1>Книжный фонд</h1>
 
-<a class="add" href="form.php" onclick="add">[+]</a>
+<a class="add" href="index.php?action=addBook" onclick="add">[+]</a>
 <a class="edit" href="form.php/edit/{id}">[<->]</a>
 <a class="delete">[-]</a>
 <table>
