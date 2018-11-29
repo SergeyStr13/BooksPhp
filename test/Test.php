@@ -41,7 +41,6 @@ class Test extends TestCase {
 	public function testForm() {
 		$d = $this->driver;
 		$d->get('http://localhost/BooksPhp/form.php');
-
 		$form = $d->findElement(WebDriverBy::cssSelector('form.add'));
 		// sleep(1);
 		$form->findElement(WebDriverBy::name('title'))->sendKeys('Приветствие');

@@ -39,19 +39,7 @@ function booksItems() {
 
 function addBook($book) {
 
-	/*
-	{
-		"id": 1 //++
-		"name":"Бла бла бла",
-		"description": "Описание"
-	}
-	*/
-   	//$numberBook = 1;
-
 	$filename = 'data.json';
-	//$dataText = '{books:[{'.PHP_EOL
-	//	.'"id":'.$numberBook.PHP_EOL.'}';
-
 	$cont = file_get_contents($filename);
 	$data = json_decode($cont);
 
