@@ -1,4 +1,14 @@
+body {
+	margin: 0;
+}
+
 .add input {
 	display: block;
 	margin-bottom: 20px;
+}
+
+.head {
+	height: 50px;
+	width: 100%;
+	background: green;
 }

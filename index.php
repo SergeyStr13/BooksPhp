@@ -10,16 +10,8 @@
 	*/
 	define('CORE_INDEX', 1);
 
-	$action = $_GET['action'] ?? '';
-	if ($action == 'addBook') {
-		include 'form.php';
-		exit();
-	}
-	if ($action) {
-		include 'action.php';
-		exit();
-	}
-
+	$view = '';
+	include 'action.php';
 
 ?>
 <html>
@@ -30,13 +22,20 @@
 </head>
 
 <body>
+	<div class="head"></div>
 	<?php
-	if ($content) {
-		echo 'Данных нет';
-		//$twig->render();
-	} else {
-		include 'booksItems.php';
-	}
+		include $view;
+		/*$action = $_GET['action'] ?? '';
+		if ($action) {
+			if ($action == 'formBook') {
+				include 'form.php';
+			} else {
+
+			}
+		} else {
+			include 'booksItems.php';
+		}*/
+
 
 	?>
 

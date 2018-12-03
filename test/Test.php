@@ -38,9 +38,19 @@ class Test extends TestCase {
 		$this->driver->close();
 	}
 
-	public function testForm() {
+	private function prepareTest() {
 		$d = $this->driver;
-		$d->get('http://localhost/BooksPhp/form.php');
+		$d->get('http://localhost/BooksPhp/index.php?action=prepareTest');
+	}
+
+	private function finishTest() {
+		$d = $this->driver;
+		$d->get('http://localhost/BooksPhp/index.php?action=finishTest');
+	}
+
+	public function insertBook() {
+		$d = $this->driver;
+		$d->get('http://localhost/BooksPhp/index.php?action=formBook');
 		$form = $d->findElement(WebDriverBy::cssSelector('form.add'));
 		// sleep(1);
 		$form->findElement(WebDriverBy::name('title'))->sendKeys('Приветствие');
@@ -50,7 +60,14 @@ class Test extends TestCase {
 		$form->findElement(WebDriverBy::name('author'))->sendKeys('Сидоров.В.М');
 		// sleep(1);
 		$form->findElement(WebDriverBy::cssSelector('button[type="submit"]'))->click();
-		$this->assertContains('Введенные данные корректны', $d->findElement(WebDriverBy::tagName('body'))->getText());
+		$elements = $d->findElement(WebDriverBy::cssSelector('table'))->getText();
+		sleep(3);
+		$this->assertContains('Приветствие', $elements);
+
+	}
+
+	function deleteBook() {
+
 	}
 
 }

@@ -10,9 +10,8 @@ defined('CORE_INDEX') or die('restricted access');
 ?>
 <h1>Книжный фонд</h1>
 
-<a class="add" href="index.php?action=addBook" onclick="add">[+]</a>
-<a class="edit" href="form.php/edit/{id}">[<->]</a>
-<a class="delete">[-]</a>
+<a class="add" href="index.php?action=formBook" onclick="add">[+]</a>
+
 <table>
 	<tr>
 		<th>Наименование</th>
@@ -20,18 +19,17 @@ defined('CORE_INDEX') or die('restricted access');
 		<th>Авторы</th>
 	</tr>
 	<tbody>
-		<?php
-		$p = '';
-			foreach ($books as $key => $value ) {
-				echo '<tr>';
-					echo '<td>'.$books[$key]->title.'</td>';
-					echo '<td>'.$books[$key]->description.'</td>';
-					echo '<td>'.$books[$key]->author.'</td>';
-				echo '</tr>';
-				//echo '<td>'.$data->books->description.'</td>';
-				//echo '<td>'.$data->books->author.'</td>';
-			}
-		?>
+		<?php foreach ($books as $key => $value): ?>
+			<tr>
+				<td><?= $books[$key]->title ?></td>
+				<td><?= $books[$key]->description ?></td>
+				<td><?= $books[$key]->author ?></td>
+				<td>
+					<a class="edit" href="index.php?action=formBook&idBook=<?= $books[$key]->id ?>">[<->]</a>
+					<a class="delete" href="index.php?action=deleteBook&idBook=<?= $books[$key]->id ?>">[-]</a>
+				</td>
+			</tr>
+		<?php endforeach; ?>
 	</tbody>
 </table>
 
