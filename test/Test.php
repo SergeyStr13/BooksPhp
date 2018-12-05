@@ -50,7 +50,7 @@ class Test extends TestCase {
 
 	public function insertBook() {
 		$d = $this->driver;
-		$d->get('http://localhost/BooksPhp/index.php?action=formBook');
+		$d->get('http://localhost/BooksPhp/index.php?action=bookForm');
 		$form = $d->findElement(WebDriverBy::cssSelector('form.add'));
 		// sleep(1);
 		$form->findElement(WebDriverBy::name('title'))->sendKeys('Приветствие');

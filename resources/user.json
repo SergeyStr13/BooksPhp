@@ -1,0 +1,25 @@
+{
+    "maxId": 4,
+    "users": [
+        {
+            "id": 1,
+            "name": "admin",
+            "login": "superadmin",
+            "password": "123",
+            "email": ""
+        },
+        {
+            "id": 2,
+            "name": "library",
+            "login": "library",
+            "password": "459",
+            "email": ""
+        },
+        {
+            "name": "user1",
+            "login": "user1",
+            "email": "user@gmail.com",
+            "id": "3"
+        }
+    ]
+}

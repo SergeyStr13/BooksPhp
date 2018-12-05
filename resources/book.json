@@ -1,0 +1,47 @@
+{
+    "maxId": 11,
+    "books": [
+        {
+            "title": "Первая книга",
+            "description": "Про зверей2",
+            "author": "Петров Иван Семенович",
+            "id": "1"
+        },
+        {
+            "id": 2,
+            "title": "Вторая книга",
+            "description": "Про животных",
+            "author": "Сидоров Петр Иванович"
+        },
+        {
+            "title": "wqqw",
+            "description": "wqw",
+            "author": "wqwq",
+            "id": 3
+        },
+        {
+            "title": "12",
+            "description": "12",
+            "author": "12",
+            "id": 6
+        },
+        {
+            "title": "13",
+            "description": "13",
+            "author": "13",
+            "id": 7
+        },
+        {
+            "title": "Приветствие",
+            "description": "Работает",
+            "author": "Сидоров.В.М",
+            "id": 8
+        },
+        {
+            "title": "Приветствие",
+            "description": "Работает",
+            "author": "Сидоров.В.М",
+            "id": 9
+        }
+    ]
+}
