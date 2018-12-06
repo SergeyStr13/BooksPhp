@@ -1,8 +1,5 @@
 <?php
-
-	//$fileData = fopen('data.json', 'r');
 	$content = null;
-
 	/*
 	require_once 'vendor/autoload.php';
 	$loader = new Twig_Loader_Filesystem('/views');
@@ -13,6 +10,7 @@
 	$view = '';
 	session_start();
 	$userId = $_SESSION['uid'] ?? '';
+	$userName = $_SESSION['name'] ?? '';
 
 	require 'action.php';
 ?>
@@ -25,7 +23,7 @@
 
 <body>
 	<div class="head">
-		<?php echo ($userId) ? '<a href="index.php?action=signOut">Выйти</a>' : '<a href="index.php?action=signIn">Войти</a>'?>
+		<?php echo ($userId) ? '<a href="index.php?action=signOut">Выйти</a><span> '.$userName.'</span>' : '<a href="index.php?action=signIn">Войти</a>'?>
 	</div>
 	<?php
 		include $view;

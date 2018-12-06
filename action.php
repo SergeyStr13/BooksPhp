@@ -1,11 +1,13 @@
 <?php
 defined('CORE_INDEX') or die('restricted access');
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///  Routing
 $action = $_GET['action'] ?? '';
 
 switch ($action) {
 
-	// module Books
+	//route component Books
 	case 'insertBook':
 		$book = getBookFromRequest();
 		if ($book) {
@@ -42,7 +44,7 @@ switch ($action) {
 		$view = 'bookForm.php';
 		break;
 
-	// module User
+	//route component User
 	case 'insertUser':
 		$user = getUserFromRequest();
 		if ($user) {
@@ -79,7 +81,7 @@ switch ($action) {
 		$view = 'userForm.php';
 		break;
 
-	// standart
+	// route authorise
 	case 'signIn':
 		$_POST['login'] = 'superadmin';
 		$_POST['password'] = '123';
@@ -98,7 +100,7 @@ switch ($action) {
 		//$view = 'booksItems.php';
 		redirect('index.php');
 		break;
-
+	//route Test
 	case 'prepareTest':
 		prepareTest();
 		break;
@@ -137,6 +139,57 @@ function saveResource($resource, $data) {
 	$cont = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 	file_put_contents($filename, $cont);
 }
+//// universal function CRUD for file json
+function getElementById($idElement, $elements, $resource) {
+	$data = loadResource($resource);
+	foreach ($data->$elements as $index => $element) {
+		if ($idElement == $element->id) {
+			return $element;
+		}
+	}
+	return null;
+}
+
+function insertElement($element, $elements, $resource) {
+	$data = loadResource($resource);
+
+	$data->maxId++;
+	$element['id'] = $data->maxId;
+	$data->$elements[] = $element;
+
+	saveResource($resource, $data);
+	redirect('index.php');
+}
+
+function updateElement ($idElement, $elements, $dataEl, $resource) {
+	$data = loadResource($resource);
+
+	foreach ($data->$elements as $index => $element) {
+		if ($idElement == $element->id) {
+			$dataEl['id'] = $idElement;
+			$data->$elements[$index] = $dataEl;
+			break;
+		}
+	}
+	saveResource($resource, $data);
+
+	redirect('index.php');
+
+}
+
+function deleteElement($idElement, $elements, $resource) {
+	$data = loadResource($resource);
+	foreach ($data->$elements as $index => $element) {
+		if ($idElement == $element->id) {
+			array_splice($data->$elements,$index,1);
+			break;
+		}
+	}
+	saveResource($resource, $data);
+
+	redirect('index.php');
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Book
@@ -282,9 +335,8 @@ function deleteUser($idUser) {
 	redirect('index.php');
 }
 
-
-
-
+////////////////////////////////////////////////////////////////////////////
+///
 function clean($value = "") {
 	$value = trim($value);
 	return $value;
@@ -303,6 +355,7 @@ function signIn($login, $password) {
 		if ($user->login === $login && $user->password === $password) {
 			//$userId = $user->id;
 			startSession();
+			$_SESSION['name'] = $user->name;
 			$_SESSION['uid'] = $user->id;
 			return true;
 		}
