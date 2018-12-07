@@ -23,7 +23,16 @@
 
 <body>
 	<div class="head">
-		<?php echo ($userId) ? '<a href="index.php?action=signOut">Выйти</a><span> '.$userName.'</span>' : '<a href="index.php?action=signIn">Войти</a>'?>
+		<?php echo ($userId)
+			? '<a href="index.php?action=signOut">Выйти</a>
+				<span> '.$userName.'</span>'
+			: '<a href="index.php?action=signIn">Войти</a>'?>
+	</div>
+	<div class="menu">
+		<ul>
+			<li><a href="index.php?action=booksItems">Книги</a></li>
+			<li><a href="index.php?action=usersItems">Пользователи</a></li>
+		</ul>
 	</div>
 	<?php
 		include $view;

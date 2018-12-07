@@ -4,6 +4,7 @@ defined('CORE_INDEX') or die('restricted access');
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///  Routing
 $action = $_GET['action'] ?? '';
+$params = [];
 
 switch ($action) {
 
@@ -107,19 +108,30 @@ switch ($action) {
 	case 'finishTest':
 		finishTest();
 		break;
+
+
+	case 'booksItems':
+		[$view, $params] = getItemsBooks($userId);
+		break;
+	case 'usersItems':
+		[$view, $params] = getItemsUsers($userId);
+		break;
 	default:
-		$canEdit = ($userId != '');
 		$isAdmin = ($userId == 1);
 		if ($isAdmin) {
-			$data = loadResource('user');
-			$users = $data->users;
-			$view = 'usersItems.php';
+			//[$users, $view]= getItems('books','book');
+			[$view, $params] = getItemsUsers($userId);
+			//$data = loadResource('user');
+			//$users = $data->users;
+			//$view = 'usersItems.php';
 		} else {
-			$data = loadResource('book');
+			[$view, $params] = getItemsBooks($userId);
+			/* $data = loadResource('book');
 			$books = $data->books;
-			$view = 'booksItems.php';
+			$view = 'booksItems.php'; */
 		}
 }
+extract($params, EXTR_SKIP);
 
 ////////////////////////////////////////////////////////////////////
 function redirect ($url) {
@@ -131,7 +143,6 @@ function loadResource($resource) {
 	$filename = "resources/$resource.json";
 	$cont = file_get_contents($filename);
 	return json_decode($cont);
-
 }
 
 function saveResource($resource, $data) {
@@ -148,6 +159,11 @@ function getElementById($idElement, $elements, $resource) {
 		}
 	}
 	return null;
+}
+
+function getItems($elements, $resource) {
+	$data = loadResource($resource);
+	return $data->$elements;
 }
 
 function insertElement($element, $elements, $resource) {
@@ -219,6 +235,14 @@ function getBookById($idBook) {
 	}
 	return null;
 }
+
+function getItemsBooks($userId) {
+	$canEdit = ($userId != '');
+	$books = getItems('books', 'book');
+	$view = 'booksItems.php';
+	return [$view, ['books' => $books, 'canEdit' => $canEdit]];
+}
+
 
 /**
  * @param $book
@@ -293,6 +317,16 @@ function getUserById($idUser) {
 	}
 	return null;
 }
+
+function getItemsUsers($userId) {
+	if ($userId !== 1) {
+		redirect('index.php');
+	}
+	$users = getItems('users', 'user');
+	$view = 'usersItems.php';
+	return [$view, ['users' => $users]];
+}
+
 function insertUser($user) {
 
 	$data = loadResource('user');
