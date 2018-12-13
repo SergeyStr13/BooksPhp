@@ -7,6 +7,7 @@
 	*/
 	define('CORE_INDEX', 1);
 
+
 	$view = '';
 	session_start();
 	$userId = $_SESSION['uid'] ?? '';
