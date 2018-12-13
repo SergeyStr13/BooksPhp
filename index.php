@@ -5,7 +5,7 @@
 	$loader = new Twig_Loader_Filesystem('/views');
 	$twig = new Twig_Environment($loader);
 	*/
-	define('CORE_INDEX', 1);
+	define('CORE_INDEX', 1); // test
 
 
 	$view = '';
