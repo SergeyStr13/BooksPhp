@@ -1,6 +1,23 @@
 <?php
 defined('CORE_INDEX') or die('restricted access');
 
+try {
+	$user = 'root';
+	$pass = '';
+	$connection = new PDO('mysql:host=localhost;dbname=booksphp', $user, $pass, [
+		PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+		PDO::MYSQL_ATTR_INIT_COMMAND => 'set names utf8'
+	]);
+} catch (PDOException $ex) {
+	echo $ex->getMessage();
+}
+
+
+$res = $connection->query('select * from book');
+$items = $res->fetchAll(PDO::FETCH_ASSOC);
+
+var_dump($items);
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///  Routing
 $action = $_GET['action'] ?? '';
