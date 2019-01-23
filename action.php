@@ -1,22 +1,19 @@
 <?php
 defined('CORE_INDEX') or die('restricted access');
 
+//section Database query
 try {
 	$user = 'root';
 	$pass = '';
-	$connection = new PDO('mysql:host=localhost;dbname=booksphp', $user, $pass, [
+	$db = new PDO('mysql:host=localhost;dbname=booksphp', $user, $pass, [
 		PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 		PDO::MYSQL_ATTR_INIT_COMMAND => 'set names utf8'
 	]);
 } catch (PDOException $ex) {
 	echo $ex->getMessage();
 }
-
-
-$res = $connection->query('select * from book');
-$items = $res->fetchAll(PDO::FETCH_ASSOC);
-
-var_dump($items);
+//getBookDb($connection);
+//print_r(PDO::getAvailableDrivers());
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///  Routing
@@ -61,12 +58,16 @@ switch ($action) {
 		}
 		$view = 'bookForm.php';
 		break;
+	case 'booksItems':
+		[$view, $params] = getItemsBooks($userId);
+		break;
 
 	//route component User
 	case 'insertUser':
 		$user = getUserFromRequest();
 		if ($user) {
-			insertUser($user);
+			//insertUser($user);
+			insertUserDb($user,$db);
 		}
 		break;
 	case 'updateUser':
@@ -98,6 +99,9 @@ switch ($action) {
 		}
 		$view = 'userForm.php';
 		break;
+	case 'usersItems':
+		[$view, $params] = getItemsUsers($userId);
+		break;
 
 	// route authorise
 	case 'signIn':
@@ -126,21 +130,14 @@ switch ($action) {
 		finishTest();
 		break;
 
-
-	case 'booksItems':
-		[$view, $params] = getItemsBooks($userId);
-		break;
-	case 'usersItems':
-		[$view, $params] = getItemsUsers($userId);
-		break;
 	default:
 		$isAdmin = ($userId == 1);
 		if ($isAdmin) {
 			//[$users, $view]= getItems('books','book');
 			[$view, $params] = getItemsUsers($userId);
-			//$data = loadResource('user');
-			//$users = $data->users;
-			//$view = 'usersItems.php';
+			/* $data = loadResource('user');
+			$users = $data->users;
+			$view = 'usersItems.php'; */
 		} else {
 			[$view, $params] = getItemsBooks($userId);
 			/* $data = loadResource('book');
@@ -205,9 +202,7 @@ function updateElement ($idElement, $elements, $dataEl, $resource) {
 		}
 	}
 	saveResource($resource, $data);
-
 	redirect('index.php');
-
 }
 
 function deleteElement($idElement, $elements, $resource) {
@@ -225,7 +220,7 @@ function deleteElement($idElement, $elements, $resource) {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Book
+///Component Book
 function getBookFromRequest () {
 	$book = null;
 	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -259,7 +254,6 @@ function getItemsBooks($userId) {
 	$view = 'booksItems.php';
 	return [$view, ['books' => $books, 'canEdit' => $canEdit]];
 }
-
 
 /**
  * @param $book
@@ -305,21 +299,29 @@ function deleteBook($idBook) {
 
 	redirect('index.php');
 }
+// with DB
+function getItemsBookDb($connection) {
+	$bookDb = $connection->query('select * from book');
+	$items = $bookDb->fetchAll(PDO::FETCH_ASSOC);
+	var_dump($items);
+}
+
 
 ///////////////////////////////////////////////////////////////////
-/// User
+///Component User
 function getUserFromRequest () {
 	$user = null;
 	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$name = isset($_POST['name']) ? $_POST['name'] : null;
 		$login = $_POST['login'] ?? '';
+		$password = $_POST['password'] ?? '';
 		$email = $_POST['email'] ?? '';
-
 		if ($name != '' && $login != '' && $email != '') {
-			$user = [];
+			$user = compact('name','login', 'password', 'email');
+			/*$user = [];
 			$user['name'] = $name;
 			$user['login'] = $login;
-			$user['email'] = $email;
+			$user['email'] = $email;*/
 		}
 	}
 	return $user;
@@ -345,21 +347,16 @@ function getItemsUsers($userId) {
 }
 
 function insertUser($user) {
-
 	$data = loadResource('user');
-
 	$data->maxId++;
 	$user['id'] = $data->maxId;
 	$data->users[] = $user;
-
 	saveResource('user', $data);
-
 	redirect('index.php');
 }
 
 function updateUser ($idUser,$dataUser) {
 	$data = loadResource('user');
-
 	foreach ($data->users as $index => $user) {
 		if ($idUser == $user->id) {
 			$dataUser['id'] = $idUser;
@@ -368,9 +365,7 @@ function updateUser ($idUser,$dataUser) {
 		}
 	}
 	saveResource('user', $data);
-
 	redirect('index.php');
-
 }
 
 function deleteUser($idUser) {
@@ -382,7 +377,32 @@ function deleteUser($idUser) {
 		}
 	}
 	saveResource('user', $data);
+	redirect('index.php');
+}
 
+// with DB
+/**
+ * @param PDO $db
+ */
+function getItemsUserDb(PDO $db) {
+	$userDb = $db->query('select * from user');
+	$items = $userDb->fetchAll(PDO::FETCH_ASSOC);
+	var_dump($items);
+}
+
+/**
+ * @param $user
+ * @param PDO $db
+ */
+function insertUserDb($user, PDO $db) {
+	//$db->query('INSERT INTO `user` (`id`, `title`, `description`, `author`) VALUES (NULL, \'\', \'\', \'\') ');
+	/*$query = $db->prepare("INSERT INTO user (`title`, `description`, `author`)".
+		" values ({$user['title']},{$user['description']},{$user['author']})"); */
+	//'' => '',
+	$fields = implode(',',array_keys($user));
+	$values = "'".implode("','", array_values($user))."'";
+	$query = $db->prepare("insert into user ({$fields}) values ({$values}) ");
+	$query->execute();
 	redirect('index.php');
 }
 
