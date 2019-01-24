@@ -12,14 +12,14 @@ defined('CORE_INDEX') or die('restricted access');
 		<th></th>
 	</tr>
 	<tbody>
-		<?php foreach ($users as $key => $value): ?>
+		<?php foreach ($users as $key => $user): ?>
 			<tr>
-				<td><?= $users[$key]->name ?></td>
-				<td><?= $users[$key]->login ?></td>
-				<td><?= $users[$key]->email ?></td>
+				<td><?= $user->name ?></td>
+				<td><?= $user->login ?></td>
+				<td><?= $user->email ?></td>
 				<td>
-					<a class="edit" href="index.php?action=userForm&idUser=<?= $users[$key]->id ?>">[<->]</a>
-					<a class="delete" href="index.php?action=deleteUser&idUser=<?= $users[$key]->id ?>">[-]</a>
+					<a class="edit" href="index.php?action=userForm&idUser=<?= $user->id ?>">[<->]</a>
+					<a class="delete" href="index.php?action=deleteUser&idUser=<?= $user->id ?>">[-]</a>
 				</td>
 			</tr>
 		<?php endforeach; ?>

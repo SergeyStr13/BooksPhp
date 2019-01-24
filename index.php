@@ -35,9 +35,8 @@
 			<li><a href="index.php?action=usersItems">Пользователи</a></li>
 		</ul>
 	</div>
-	<?php
-		include $view;
-	?>
-
+	<div class="content">
+		<?php include $view; ?>
+	</div>
 </body>
 </html>

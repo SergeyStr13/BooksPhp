@@ -9,6 +9,7 @@ try {
 		PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 		PDO::MYSQL_ATTR_INIT_COMMAND => 'set names utf8'
 	]);
+	//$db->setFetchMode(PDO::FETCH_ASSOC);
 } catch (PDOException $ex) {
 	echo $ex->getMessage();
 }
@@ -73,34 +74,38 @@ switch ($action) {
 	case 'updateUser':
 		$idUser = $_GET['idUser'] ?? '';
 		if ($idUser) {
+			// $user = getUserByIdDb($idUser,$db);
 			$user = getUserFromRequest();
 			if ($user) {
-				updateUser($idUser,$user);
+				//updateUser($idUser,$user);
+				updateUserDb($idUser,$user,$db);
 			}
 		}
 		break;
 	case 'deleteUser':
 		$idUser = $_GET['idUser'] ?? '';
 		if ($idUser) {
-			deleteUser($idUser);
+			//deleteUser($idUser);
+			deleteUserDb($idUser,$db);
 		}
 		break;
 	case 'userForm':
 		$idUser = $_GET['idUser'] ?? '';
 		if ($idUser) {
-			$user = getUserById($idUser);
+			//$user = getUserById($idUser);
+			$user = getUserByIdDb($idUser,$db);
 			if (!$user) {
 				redirect('index.php');
 			}
 			$formAction = 'action=updateUser&idUser='.$idUser;
-
 		} else {
 			$formAction = 'action=insertUser';
 		}
 		$view = 'userForm.php';
 		break;
 	case 'usersItems':
-		[$view, $params] = getItemsUsers($userId);
+		[$view, $params] = getItemsUsersDb($userId,$db);
+		//[$view, $params] = getItemsUsers($userId);
 		break;
 
 	// route authorise
@@ -133,8 +138,9 @@ switch ($action) {
 	default:
 		$isAdmin = ($userId == 1);
 		if ($isAdmin) {
-			//[$users, $view]= getItems('books','book');
-			[$view, $params] = getItemsUsers($userId);
+			[$view, $params] = getItemsUsersDb($userId, $db);
+			/*[$users, $view]= getItems('books','book');
+			[$view, $params] = getItemsUsers($userId);*/
 			/* $data = loadResource('user');
 			$users = $data->users;
 			$view = 'usersItems.php'; */
@@ -153,6 +159,10 @@ function redirect ($url) {
 	exit();
 }
 
+/**
+ * @param $resource
+ * @return mixed
+ */
 function loadResource($resource) {
 	$filename = "resources/$resource.json";
 	$cont = file_get_contents($filename);
@@ -218,9 +228,7 @@ function deleteElement($idElement, $elements, $resource) {
 	redirect('index.php');
 }
 
-
-//////////////////////////////////////////////////////////////////////////////////////////
-///Component Book
+//<editor-fold desc="Component Book">
 function getBookFromRequest () {
 	$book = null;
 	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -305,10 +313,10 @@ function getItemsBookDb($connection) {
 	$items = $bookDb->fetchAll(PDO::FETCH_ASSOC);
 	var_dump($items);
 }
+//</editor-fold>
 
 
-///////////////////////////////////////////////////////////////////
-///Component User
+//<editor-fold desc="Component User">
 function getUserFromRequest () {
 	$user = null;
 	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -317,7 +325,7 @@ function getUserFromRequest () {
 		$password = $_POST['password'] ?? '';
 		$email = $_POST['email'] ?? '';
 		if ($name != '' && $login != '' && $email != '') {
-			$user = compact('name','login', 'password', 'email');
+			$user = (object) compact('name','login', 'password', 'email');
 			/*$user = [];
 			$user['name'] = $name;
 			$user['login'] = $login;
@@ -327,7 +335,7 @@ function getUserFromRequest () {
 	return $user;
 }
 
-function getUserById($idUser) {
+function getUserById($idUser, $mode) {
 	$data = loadResource('user');
 	foreach ($data->users as $index => $user) {
 		if ($idUser == $user->id) {
@@ -380,14 +388,28 @@ function deleteUser($idUser) {
 	redirect('index.php');
 }
 
-// with DB
+// with user DB
+function getUserByIdDb($idUser, PDO $db) {
+	$query = $db->prepare('select * from user where user.id = ?');
+	$query->execute([$idUser]);
+	$user = $query->fetch(PDO::FETCH_OBJ);
+	//var_dump($user);
+	return $user;
+}
+
 /**
+ * @param int $userId
  * @param PDO $db
+ * @return array;
  */
-function getItemsUserDb(PDO $db) {
-	$userDb = $db->query('select * from user');
-	$items = $userDb->fetchAll(PDO::FETCH_ASSOC);
-	var_dump($items);
+function getItemsUsersDb($userId, PDO $db) {
+	if ($userId !== 1) {
+		redirect('index.php');
+	}
+	$query = $db->query('select * from user');
+	$users = $query->fetchAll(PDO::FETCH_CLASS);//PDO::FETCH_ASSOC);
+	$view = 'usersItems.php';
+	return [$view, ['users' => $users]];
 }
 
 /**
@@ -395,19 +417,32 @@ function getItemsUserDb(PDO $db) {
  * @param PDO $db
  */
 function insertUserDb($user, PDO $db) {
-	//$db->query('INSERT INTO `user` (`id`, `title`, `description`, `author`) VALUES (NULL, \'\', \'\', \'\') ');
 	/*$query = $db->prepare("INSERT INTO user (`title`, `description`, `author`)".
 		" values ({$user['title']},{$user['description']},{$user['author']})"); */
-	//'' => '',
-	$fields = implode(',',array_keys($user));
-	$values = "'".implode("','", array_values($user))."'";
-	$query = $db->prepare("insert into user ({$fields}) values ({$values}) ");
+	$keys = array_keys($user);
+	$fields = implode(',',$keys);
+	$values = implode(',',array_fill(0, count($keys), '?')); // "'".implode("','", array_values($user))."'";
+	$query = $db->prepare("insert into user ({$fields}) values ({$values}) ", array_values($user));
 	$query->execute();
 	redirect('index.php');
 }
 
-////////////////////////////////////////////////////////////////////////////
-///
+function updateUserDb($idUser,$user,$db) {
+	$user->id = $idUser;
+	$query = $db->prepare("update user set name = :name, login = :login, "
+		."password = :password, email = :email where user.id= :id");
+	$query->execute((array) $user);
+	redirect('index.php');
+}
+
+function deleteUserDb($idUser,PDO $db) {
+	$query = $db->prepare("delete from user where user.id = ?");
+	$query->execute([$idUser]);
+	redirect('index.php');
+}
+//</editor-fold>
+
+
 function clean($value = "") {
 	$value = trim($value);
 	return $value;
@@ -418,7 +453,7 @@ function checkLength($value = "", $min, $max) {
 	return !$result;
 }
 
-// block authorise
+//<editor-fold desc="Authorise">
 function signIn($login, $password) {
 
 	$data = loadResource('user');
@@ -462,6 +497,7 @@ function destroySessin() {
 		session_destroy();
 	}
 }
+//</editor-fold>
 
 //custom function
 function prepareTest() {
