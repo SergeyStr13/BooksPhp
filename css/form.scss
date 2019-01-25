@@ -6,19 +6,35 @@ body {
 	height: 50px;
 	width: 100%;
 	background: green;
+	a, span {
+		float: right;
+		margin: 10px;
+	}
 }
 
-.menu ul {
-	margin: 0;
-	padding: 0;
-	list-style: none;
+.menu {
+	width: 170px;
+	display: inline-block;
+	line-height: 2;
+	background: #baef95;
+	height: 100%;
+	position: absolute;
+	ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
 }
 
 .content{
-	margin: 0;
+	padding-left: 200px;
+	table {
+		width: 450px;
+	}
 }
 
 .add input {
 	display: block;
 	margin-bottom: 20px;
 }
+

@@ -32,7 +32,8 @@
 	<div class="menu">
 		<ul>
 			<li><a href="index.php?action=booksItems">Книги</a></li>
-			<li><a href="index.php?action=usersItems">Пользователи</a></li>
+			<?php if ($userId) {
+				echo '<li><a href="index.php?action=usersItems">Пользователи</a></li>'; } ?>
 		</ul>
 	</div>
 	<div class="content">

@@ -98,8 +98,10 @@ switch ($action) {
 				redirect('index.php');
 			}
 			$formAction = 'action=updateUser&idUser='.$idUser;
+			$titleU = 'Редактирование';
 		} else {
 			$formAction = 'action=insertUser';
+			$titleU = 'Добавление';
 		}
 		$view = 'userForm.php';
 		break;
@@ -228,6 +230,9 @@ function deleteElement($idElement, $elements, $resource) {
 	redirect('index.php');
 }
 
+
+
+
 //<editor-fold desc="Component Book">
 function getBookFromRequest () {
 	$book = null;
@@ -281,7 +286,6 @@ function insertBook($book) {
 
 function updateBook ($idBook,$dataBook) {
 	$data = loadResource('book');
-
 	foreach ($data->books as $index => $book) {
 		if ($idBook == $book->id) {
 			$dataBook['id'] = $idBook;
@@ -290,9 +294,7 @@ function updateBook ($idBook,$dataBook) {
 		}
 	}
 	saveResource('book', $data);
-
-	redirect('index.php');
-
+	redirect('index.php/?action=booksItems');
 }
 
 function deleteBook($idBook) {
@@ -314,7 +316,6 @@ function getItemsBookDb($connection) {
 	var_dump($items);
 }
 //</editor-fold>
-
 
 //<editor-fold desc="Component User">
 function getUserFromRequest () {
@@ -417,13 +418,14 @@ function getItemsUsersDb($userId, PDO $db) {
  * @param PDO $db
  */
 function insertUserDb($user, PDO $db) {
-	/*$query = $db->prepare("INSERT INTO user (`title`, `description`, `author`)".
+	/*$query = $db->prepare("INSERT INTO user (`login`, `password`, `email`)".
 		" values ({$user['title']},{$user['description']},{$user['author']})"); */
+	$user = (array)$user;
 	$keys = array_keys($user);
 	$fields = implode(',',$keys);
 	$values = implode(',',array_fill(0, count($keys), '?')); // "'".implode("','", array_values($user))."'";
-	$query = $db->prepare("insert into user ({$fields}) values ({$values}) ", array_values($user));
-	$query->execute();
+	$query = $db->prepare("insert into user ({$fields}) values ({$values}) ");
+	$query->execute(array_values($user));
 	redirect('index.php');
 }
 

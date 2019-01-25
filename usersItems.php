@@ -2,8 +2,9 @@
 defined('CORE_INDEX') or die('restricted access');
 
 ?>
-<h1>Книжный фонд</h1>
-	<a class="add" href="index.php?action=userForm" onclick="add">[+]</a>
+<h1>Пользователи</h1>
+<a class="add" href="index.php?action=userForm" onclick="add">[+]</a>
+
 <table>
 	<tr>
 		<th>Имя</th>
