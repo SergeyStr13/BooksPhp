@@ -156,6 +156,9 @@ switch ($action) {
 extract($params, EXTR_SKIP);
 
 ////////////////////////////////////////////////////////////////////
+///
+///
+///
 function redirect ($url) {
 	header("Location: http://localhost/booksphp/$url");
 	exit();
